@@ -1,10 +1,21 @@
 import chess
 import socket
 from stockfish import Stockfish
+import platform
 
-# Using latest stockfish (at time of programming)
+# Detect the operating system
+os_name = platform.system()
 
-fish = Stockfish(path=".\stockfish-windows-x86-64-avx2.exe")
+# Define the path based on the OS
+if os_name == 'Windows':
+    stockfish_path = ".\stockfish-windows-x86-64-avx2.exe"
+elif os_name == 'Darwin':  # Darwin is the system name for macOS
+    stockfish_path = "/usr/local/bin/stockfish"
+else:
+    raise Exception("Unsupported operating system")
+
+# Initialize Stockfish with the appropriate path
+fish = Stockfish(path=stockfish_path)
 
 board = chess.Board()
 
