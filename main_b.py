@@ -3,6 +3,7 @@ import socket
 from stockfish import Stockfish
 import platform
 import chess.pgn
+import os
 
 # Detect the operating system
 os_name = platform.system()
@@ -20,7 +21,6 @@ else:
 # Initialize Stockfish with the appropriate path
 fish = Stockfish(path=stockfish_path, parameters={"Hash": 2048, "Threads": 15})
 
-board = chess.Board()
 
 
 # Create a socket object
@@ -32,7 +32,7 @@ send_socket = socket.socket()
 # Define host and port
 port = 12345
 host = '0.0.0.0'
-send_host = '100.115.28.85'
+send_host = '100.115.59.53'
 
 
 
@@ -60,67 +60,78 @@ receive_socket.listen(5)
 print("Server listening...")
 node = game
 
-while True:
+def play_game():
+    board = chess.Board()
+    decisive = False
+    while not decisive:
 
-    # Establish connection with client
-    client_socket, addr = receive_socket.accept()
+        # Establish connection with client
+        client_socket, addr = receive_socket.accept()
 
-    # Receive data from the client
-    data = client_socket.recv(1024).decode()
+        # Receive data from the client
+        data = client_socket.recv(1024).decode()
 
-    print('Received:', data)
+        print('Received:', data)
 
-    client_socket.close()
+        client_socket.close()
 
-    # If a move is received, push it to the board
-    board.push_uci(data)
-    print(board)
-    print("White to move" if board.turn else "Black to move")
-
-    # Check game status only after a move is received
-    if board.is_checkmate():
-        print("Checkmate. White wins!" if not board.turn else "Checkmate. Black wins!")
-    elif board.is_stalemate():
-        print("Game drawn due to stalemate.")
-    elif board.is_insufficient_material():
-        print("Game drawn due to insufficient material.")
-    elif board.can_claim_fifty_moves():
-        print("Game drawn due to fifty-move rule.")
-    elif board.can_claim_threefold_repetition():
-        print("Game drawn due to threefold repetition.")
-    elif board.can_claim_draw():
-        print("Game drawn (draw claim).")
-    else:
-        # If the game is still ongoing, let Stockfish make a move
-        fish.set_fen_position(board.fen())
-        move = fish.get_best_move_time(5000)
-        board.push_uci(move)
-        
+        # If a move is received, push it to the board
+        board.push_uci(data)
         print(board)
-        eval = fish.get_evaluation()
-        print(eval)
-        if eval['type'] == 'mate':
-            game = chess.pgn.Game()
-            game.headers["Event"] = "Example Game"
-            game.headers["White"] = "Player1"
-            game.headers["Black"] = "Player2"
+        print("White to move" if board.turn else "Black to move")
 
-            node = game
-
-            for move in board.move_stack:
-                node = node.add_variation(move)
-
-            # Export to PGN
-            pgn_string = str(game)
-            print(pgn_string)
+        # Check game status only after a move is received
+        if board.is_checkmate():
+            print("Checkmate. White wins!" if not board.turn else "Checkmate. Black wins!")
+            decisive = True
+        elif board.is_stalemate():
+            print("Game drawn due to stalemate.")
+            decisive = True
+        elif board.is_insufficient_material():
+            print("Game drawn due to insufficient material.")
+            decisive = True
+        elif board.can_claim_fifty_moves():
+            print("Game drawn due to fifty-move rule.")
+            decisive = True
+        elif board.can_claim_threefold_repetition():
+            print("Game drawn due to threefold repetition.")
+            decisive = True
+        elif board.can_claim_draw():
+            print("Game drawn (draw claim).")
+            decisive = True
+        else:
+            # If the game is still ongoing, let Stockfish make a move
+            fish.set_fen_position(board.fen())
+            move = fish.get_best_move_time(5000)
+            board.push_uci(move)
+            # Send the move
+            send_socket = socket.socket()
+            send_socket.connect((send_host, port))
+            send_socket.send(move.encode())
+            print(f"sent {move}")
+            send_socket.close()
     
-            exit()
+        game = chess.pgn.Game()
+        game.headers["Event"] = "Example Game"
+        game.headers["White"] = "Player1"
+        game.headers["Black"] = "Player2"
 
-        # Send the move
-        send_socket = socket.socket()
-        send_socket.connect((send_host, port))
-        send_socket.send(move.encode())
-        print(f"sent {move}")
-        send_socket.close()
+        node = game
 
-    # Communicate back to other machine
+        for move in board.move_stack:
+            node = node.add_variation(move)
+
+        # Export to PGN
+        pgn_string = str(game)
+        # put the pgn into a folder: games/number
+        pgn_folder = "games"
+        if not os.path.exists(pgn_folder):
+            os.makedirs(pgn_folder)
+        pgn_file = os.path.join(pgn_folder, f"{len(os.listdir(pgn_folder))}.pgn")
+        with open(pgn_file, "w") as f:
+            f.write(pgn_string)
+
+        print(pgn_string)
+
+        # Communicate back to other machine
+
