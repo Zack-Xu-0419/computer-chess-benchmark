@@ -135,3 +135,5 @@ def play_game():
 
         # Communicate back to other machine
 
+for i in range(10):
+    play_game()

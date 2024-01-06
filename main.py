@@ -10,11 +10,17 @@ os_name = platform.system()
 
 game = chess.pgn.Game()
 
+
+send_host = '0.0.0.0'
+
 # Define the path based on the OS
 if os_name == 'Windows':
     stockfish_path = ".\stockfish-windows-x86-64-avx2.exe"
+    send_host = '100.115.0.1'
 elif os_name == 'Darwin':  # Darwin is the system name for macOS
     stockfish_path = "/usr/local/bin/stockfish"
+    send_host = '100.115.59.53'
+
 else:
     raise Exception("Unsupported operating system")
 
@@ -32,16 +38,8 @@ send_socket = socket.socket()
 # Define host and port
 port = 12345
 host = '0.0.0.0'
-send_host = '100.115.59.53'
 
 
-
-if os_name == 'Darwin':
-    # Mac plays first move
-    
-    send_socket.connect((send_host, port))
-    send_socket.send('e2e4')
-    send_socket.close()
 
 
 # role = input("machine a or b:\n")
@@ -63,6 +61,12 @@ node = game
 def play_game():
     board = chess.Board()
     decisive = False
+    if os_name == 'Darwin':
+        # Mac plays first move
+        
+        send_socket.connect((send_host, port))
+        send_socket.send('e2e4')
+        send_socket.close()
     while not decisive:
 
         # Establish connection with client
@@ -134,4 +138,7 @@ def play_game():
         print(pgn_string)
 
         # Communicate back to other machine
+    return True
 
+for i in range(10):
+    play_game()
