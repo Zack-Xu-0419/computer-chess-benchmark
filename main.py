@@ -68,7 +68,7 @@ def play_game():
         print("Sent First Move")
         
         send_socket.connect((send_host, port))
-        send_socket.send('e2e4')
+        send_socket.send('e2e4'.encode())
         send_socket.close()
     while not decisive:
 
