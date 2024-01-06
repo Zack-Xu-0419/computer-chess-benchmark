@@ -78,6 +78,7 @@ def play_game():
         board.push_uci('e2e4')
     while not decisive:
 
+        win = ""
         # Establish connection with client
         client_socket, addr = receive_socket.accept()
 
@@ -96,6 +97,8 @@ def play_game():
         # Check game status only after a move is received
         if board.is_checkmate():
             print("Checkmate. White wins!" if not board.turn else "Checkmate. Black wins!")
+            # Set who won
+            win = "White" if not board.turn else "Black"
             decisive = True
         elif board.is_stalemate():
             print("Game drawn due to stalemate.")
@@ -117,6 +120,10 @@ def play_game():
             fish.set_fen_position(board.fen())
             move = fish.get_best_move_time(thinkTime)
             board.push_uci(move)
+            # Check for dicisiveness after sending the move
+            if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition() or board.can_claim_draw():
+                win = "White" if not board.turn else "Black"
+                decisive = True
             # Send the move
             send_socket = socket.socket()
             send_socket.connect((send_host, port))
@@ -130,6 +137,8 @@ def play_game():
         game.headers["Event"] = "Example Game"
         game.headers["White"] = "Player1"
         game.headers["Black"] = "Player2"
+        # If win is not "", then put result as win, otherwise draw
+        game.headers["Result"] = win if win else "1/2-1/2"
 
         node = game
 
