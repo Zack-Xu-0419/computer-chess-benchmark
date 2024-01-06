@@ -65,6 +65,8 @@ receive_socket.bind((host, port))
 receive_socket.listen(5)
 
 def play_game():
+    global send_socket
+    global receive_socket
     
     board = chess.Board()
     decisive = False
