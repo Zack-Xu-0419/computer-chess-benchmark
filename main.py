@@ -16,7 +16,7 @@ send_host = '0.0.0.0'
 # Define the path based on the OS
 if os_name == 'Windows':
     stockfish_path = ".\stockfish-windows-x86-64-avx2.exe"
-    send_host = '100.115.0.1'
+    send_host = '100.115.28.85'
 elif os_name == 'Darwin':  # Darwin is the system name for macOS
     stockfish_path = "/usr/local/bin/stockfish"
     send_host = '100.115.59.53'
