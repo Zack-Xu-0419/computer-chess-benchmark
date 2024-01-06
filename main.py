@@ -8,8 +8,8 @@ import os
 # Detect the operating system
 os_name = platform.system()
 
-white = "Windows"
-thinkTime = 200
+white = "Darwin"
+thinkTime = 5000
 
 game = chess.pgn.Game()
 
