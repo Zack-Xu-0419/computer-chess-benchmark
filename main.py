@@ -9,7 +9,7 @@ import os
 os_name = platform.system()
 
 white = "Darwin"
-thinkTime = 5000
+thinkTime = 10
 
 game = chess.pgn.Game()
 
