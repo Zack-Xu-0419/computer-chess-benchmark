@@ -28,7 +28,7 @@ else:
     raise Exception("Unsupported operating system")
 
 # Initialize Stockfish with the appropriate path
-fish = Stockfish(path=stockfish_path, parameters={"Hash": 2048, "Threads": 15})
+fish = Stockfish(path=stockfish_path, parameters={"Hash": 2048, "Threads": 15, "Contempt":10})
 
 
 
