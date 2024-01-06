@@ -29,10 +29,6 @@ fish = Stockfish(path=stockfish_path, parameters={"Hash": 2048, "Threads": 15})
 
 
 
-# Create a socket object
-receive_socket = socket.socket()
-
-send_socket = socket.socket()
 
 
 # Define host and port
@@ -59,6 +55,11 @@ print("Server listening...")
 node = game
 
 def play_game():
+    
+    # Create a socket object
+    receive_socket = socket.socket()
+
+    send_socket = socket.socket()
     board = chess.Board()
     decisive = False
     if os_name == 'Darwin':
