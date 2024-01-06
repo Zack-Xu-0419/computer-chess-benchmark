@@ -8,6 +8,9 @@ import os
 # Detect the operating system
 os_name = platform.system()
 
+white = "Darwin"
+thinkTime = 0.2
+
 game = chess.pgn.Game()
 
 
@@ -63,8 +66,8 @@ def play_game():
     receive_socket.listen(5)
     board = chess.Board()
     decisive = False
-    if os_name == 'Darwin':
-        # Mac plays first move
+    if os_name == white:
+        # White plays the first move
         print("Sent First Move")
         
         send_socket.connect((send_host, port))
@@ -110,7 +113,7 @@ def play_game():
         else:
             # If the game is still ongoing, let Stockfish make a move
             fish.set_fen_position(board.fen())
-            move = fish.get_best_move_time(5000)
+            move = fish.get_best_move_time(thinkTime)
             board.push_uci(move)
             # Send the move
             send_socket = socket.socket()
