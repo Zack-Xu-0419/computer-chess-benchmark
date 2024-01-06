@@ -65,6 +65,7 @@ def play_game():
     decisive = False
     if os_name == 'Darwin':
         # Mac plays first move
+        print("Sent First Move")
         
         send_socket.connect((send_host, port))
         send_socket.send('e2e4')
