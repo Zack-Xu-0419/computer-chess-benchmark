@@ -74,6 +74,7 @@ def play_game():
         # White plays the first move
         print("Sent First Move")
         
+        send_socket = socket.socket()
         send_socket.connect((send_host, port))
         send_socket.send('e2e4'.encode())
         send_socket.close()
