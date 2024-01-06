@@ -45,11 +45,7 @@ host = '0.0.0.0'
 #     port = 54321
 
 
-# Bind to the port
-receive_socket.bind((host, port))
 
-# Wait for client connection
-receive_socket.listen(5)
 
 print("Server listening...")
 node = game
@@ -60,6 +56,11 @@ def play_game():
     receive_socket = socket.socket()
 
     send_socket = socket.socket()
+    # Bind to the port
+    receive_socket.bind((host, port))
+
+    # Wait for client connection
+    receive_socket.listen(5)
     board = chess.Board()
     decisive = False
     if os_name == 'Darwin':
