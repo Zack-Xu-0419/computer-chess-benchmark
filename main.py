@@ -53,17 +53,19 @@ host = '0.0.0.0'
 print("Server listening...")
 node = game
 
+
+# Create a socket object
+receive_socket = socket.socket()
+
+send_socket = socket.socket()
+# Bind to the port
+receive_socket.bind((host, port))
+
+# Wait for client connection
+receive_socket.listen(5)
+
 def play_game():
     
-    # Create a socket object
-    receive_socket = socket.socket()
-
-    send_socket = socket.socket()
-    # Bind to the port
-    receive_socket.bind((host, port))
-
-    # Wait for client connection
-    receive_socket.listen(5)
     board = chess.Board()
     decisive = False
     if os_name == white:
