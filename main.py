@@ -70,6 +70,7 @@ def play_game():
         send_socket.connect((send_host, port))
         send_socket.send('e2e4'.encode())
         send_socket.close()
+        board.push_uci('e2e4')
     while not decisive:
 
         # Establish connection with client
