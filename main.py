@@ -118,6 +118,8 @@ def play_game():
             send_socket.send(move.encode())
             print(f"sent {move}")
             send_socket.close()
+            break
+            
     
         game = chess.pgn.Game()
         game.headers["Event"] = "Example Game"
